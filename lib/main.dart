@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter_counter/bloc/counter_bloc.dart';
 
 void main() {
   runApp(MyApp());
 }
+
+// 가장 쉽게 최상위에 변수 선언
+final counterBloc = CounterBloc();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -25,8 +28,6 @@ class Counter extends StatefulWidget {
 }
 
 class _CounterState extends State<Counter> {
-  final counterSubject = BehaviorSubject<int>();
-  int _counter = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +39,18 @@ class _CounterState extends State<Counter> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(onPressed: () {
-                counterSubject.add(++_counter);
-              }, child: Text('add')),
               StreamBuilder<int>(
-                stream: counterSubject.stream,
-                initialData: 0,
+                stream: counterBloc.count$,
                 builder: (context, snapshot) {
                   if(snapshot.hasData) {
-                    return Text('${snapshot.data}', style: TextStyle(fontSize: 30),);
+                    return Text('${snapshot.data}', style: TextStyle(fontSize: 50),);
                   }
-                  return null;
+                  return CircularProgressIndicator();
                 }
               ),
+              ElevatedButton(onPressed: () {
+                counterBloc.addCounter();
+              }, child: Text('ADD')),
             ],
           ),
         ),
